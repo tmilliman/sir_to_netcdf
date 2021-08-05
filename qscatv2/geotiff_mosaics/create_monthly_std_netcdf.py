@@ -3,12 +3,13 @@
 import sys
 import glob
 from datetime import datetime
-import numpy as np
+import argparse
+
 import pandas as pd
 import xarray as xr
-import rioxarray as rio
 
 import qscat_common as common
+
 
 def time_index_from_filenames(filenames):
     return pd.DatetimeIndex(
@@ -17,6 +18,12 @@ def time_index_from_filenames(filenames):
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(
+        description="Script to create a monthly std netcdf file"
+    )
+
+    args = parser.parse_args()
 
     # get list of files
     filepattern = "qscat_quev_std_db_*_[01][0-9].tif"
@@ -27,10 +34,14 @@ if __name__ == "__main__":
     nimages = len(filelist)
     print("Number of images: {}".format(nimages))
 
+    if nimages == 0:
+        print("No images found.")
+        sys.exit(0)
+
     # concat all the files with the time index
-    da = xr.concat([rio.open_rasterio(f) for f in filelist],
+    da = xr.concat([xr.open_rasterio(f) for f in filelist],
                    dim=time)
-    
+
     # remove band dimension (each input image has a single band)
     da = da.squeeze('band', drop=True)
 

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
 import sys
-import glob
+import os
 from datetime import datetime
-from cftime import date2num
-import numpy as np
+import argparse
+
 import pandas as pd
 import xarray as xr
-import rioxarray as rio
-import argparse
 
 import ascat_common as common
 
@@ -17,6 +15,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Create ASCAT seasonal sig0 mean netcdf")
+
+    args = parser.parse_args()
 
     season_list = ["JFM", "AMJ", "JAS", "OND"]
 
@@ -36,7 +36,7 @@ if __name__ == "__main__":
     print("Number of Images: {}".format(nimages))
     
     time = xr.Variable('time', pd.DatetimeIndex(times))
-    da = xr.concat([rio.open_rasterio(f) for f in filelist],
+    da = xr.concat([xr.open_rasterio(f) for f in filelist],
                    dim=time)
 
     # remove band dimension (each input image has a single band)

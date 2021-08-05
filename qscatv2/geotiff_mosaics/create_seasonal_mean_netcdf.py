@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
 import sys
-import glob
+import os
 from datetime import datetime
-from cftime import date2num
-import numpy as np
+import argparse
+
 import pandas as pd
 import xarray as xr
-import rioxarray as rio
-import argparse
 
 import qscat_common as common
 
@@ -17,6 +15,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Create QuikSCAT seasonal sig0 mean netcdf")
+
+    args = parser.parse_args()
 
     season_list = ["JFM", "AMJ", "JAS", "OND"]
 
@@ -28,15 +28,20 @@ if __name__ == "__main__":
             toffset = common.MDSWITCH[season]
             fname = "qscat_quev_mean_db_{}_{}.tif"
             fname = fname.format(year, season)
-            filelist.append(fname)
+            if os.path.exists(fname):
+                filelist.append(fname)
             timestamp = pd.Timestamp("{}".format(year) + toffset)
             times.append(timestamp)
 
     nimages = len(filelist)
     print("Number of Images: {}".format(nimages))
-        
+
+    if nimages == 0:
+        print("No images found.")
+        sys.exit(0)
+
     time = xr.Variable('time', pd.DatetimeIndex(times))
-    da = xr.concat([rio.open_rasterio(f) for f in filelist],
+    da = xr.concat([xr.open_rasterio(f) for f in filelist],
                    dim=time)
 
     # remove band dimension (each input image has a single band)

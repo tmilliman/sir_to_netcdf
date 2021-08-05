@@ -3,13 +3,13 @@
 import sys
 import glob
 from datetime import datetime
-from cftime import date2num
-import numpy as np
+import argparse
+
 import pandas as pd
 import xarray as xr
-import rioxarray as rio
 
 import ascat_common as common
+
 
 def time_index_from_filenames(filenames):
     return pd.DatetimeIndex(
@@ -19,6 +19,12 @@ def time_index_from_filenames(filenames):
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser(
+        description="Script to create a monthly mean netcdf file"
+    )
+
+    args = parser.parse_args()
+
     # get a list of files
     filepattern = "ascat_msfa_mean_db_*_[01][0-9].tif"
     filenames = glob.glob(filepattern)
@@ -27,6 +33,10 @@ if __name__ == "__main__":
 
     nimages = len(filelist)
     print("Number of images: {}".format(nimages))
+
+    if nimages == 0:
+        print("No images found.")
+        sys.exit(0)
 
     # concat all the files with a time index
     da = xr.concat([xr.open_rasterio(f) for f in filelist],
