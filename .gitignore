@@ -1,0 +1,11 @@
+# editor save files
+*~
+\#*
+
+# output directories
+[12]*
+geotiffs
+
+# output files
+*.tif
+*.nc

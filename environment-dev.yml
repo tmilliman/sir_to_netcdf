@@ -1,0 +1,18 @@
+name: urban_backscatter
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - netcdf4
+  - xarray
+  - seaborn
+  - jupyterlab
+  - pandas
+  - python=3.9
+  - pytest
+  - pre-commit
+  - flake8
+  - black
+  - pytest-cov
+prefix: /Users/tmilliman/miniconda3/envs/urban_backscatter
