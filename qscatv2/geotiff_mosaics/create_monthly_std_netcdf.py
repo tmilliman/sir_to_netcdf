@@ -20,7 +20,7 @@ def time_index_from_filenames(filenames):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Script to create a monthly std netcdf file"
+        description="Create QuikSCAT monthly std netcdf file"
     )
 
     args = parser.parse_args()
