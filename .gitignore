@@ -9,3 +9,7 @@ geotiffs
 # output files
 *.tif
 *.nc
+
+# python
+__pycache__
+*.pyc

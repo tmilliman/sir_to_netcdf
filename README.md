@@ -73,6 +73,23 @@ just to keep file sizes smaller
 9. use `create_seasonal_mean_netcdf.py` to create masked seasonal mean netcdf
 10. use `create_seasonal_std_netcdf.py` to create masked seasonal std netcdf
 
+### Notes
+
+When creating the seasonal netcdf files full years are
+constructed even if there is no data for a season.  In this case an
+empty (all NODATA) image is used for the missing geotiff file.  For
+example, for QuikSCAT the first images in 1999 were for July.  So there
+was no JFM or AMJ image.
+
+    cp qscat_missing_data_image.tif qscat_quev_mean_db_1999_JFM.tif
+    cp qscat_missing_data_image.tif qscat_quev_std_db_1999_JFM.tif
+    cp qscat_missing_data_image.tif qscat_quev_mean_db_1999_AMJ.tif
+    cp qscat_missing_data_image.tif qscat_quev_std_db_1999_AMJ.tif
+    cp qscat_missing_data_image.tif qscat_quev_mean_db_1999_JFM_masked_20.tif
+    cp qscat_missing_data_image.tif qscat_quev_std_db_1999_JFM_masked_20.tif
+    cp qscat_missing_data_image.tif qscat_quev_mean_db_1999_AMJ_masked_20.tif
+    cp qscat_missing_data_image.tif qscat_quev_std_db_1999_AMJ_masked_20.tif
+
 
 ## Citation
 

@@ -5,6 +5,7 @@ channels:
 dependencies:
   - netcdf4
   - xarray
+  - rioxarray
   - seaborn
   - jupyterlab
   - pandas
