@@ -24,6 +24,14 @@ mostly portable.  In some of the bash scripts other common unix utilities
 like `awk` or `ncftpget` are used which may need to be installed for
 the scripts to work as is.
 
+### Getting the Scripts
+
+The scripts in this repository can be downloaded as a single
+[zipfile](https://github.com/tmilliman/urban_backscatter/archive/refs/heads/main.zip).
+Alternatively, using git you can clone the repository:
+
+    git clone https://github.com/tmilliman/urban_backscatter.git
+
 ### Setting up a Virtual Environment
 
 The [`miniconda`](https://docs.conda.io/en/latest/miniconda.html)
@@ -35,7 +43,35 @@ by doing the following:
     conda activate sirpy
     python -m pip install git+https://github.com/tmilliman/sirpy2.git
 
+### Outline of Steps
 
+The conversion process involves many steps that are repeated for
+each of the three instruments in the respecitve directories (ers,
+qscatv2, ascat).
+
+In each instrument directory and for each of the 14 SCP regions:
+
+1. use `get_byu_data.sh` to download .sir image files from `ftp.scp.byu.edu`
+2. use `make_region_geotiffs.sh` to covert .sir images files to geotiff format
+3. use `make_region_seasonal_images.sh` to create images of seasonal means and
+   standard deviations
+
+In the geotiff_mosaics sub-directory for each of the 14 SCP regions
+
+4. use `make_seasonal_4326_images.sh` to reproject the seasonal geotiff images
+
+Then mosaic the regional images and apply an urban mask
+
+5. use `mosaic_seasonal_images.sh` to mosaic the seasonal regional images
+6. use `apply_masks.sh` to apply urban and water mask to seasonal images
+
+Finally, create the netcdf files.  Separate the mean and standard deviations
+just to keep file sizes smaller
+
+7. use `create_masked_seasonal_mean_netcdf.py` to create seasonal mean netcdf
+8. use `create_masked_seasonal_std_netcdf.py` to create seasonal std netcdf
+9. use `create_seasonal_mean_netcdf.py` to create masked seasonal mean netcdf
+10. use `create_seasonal_std_netcdf.py` to create masked seasonal std netcdf
 
 
 ## Citation
