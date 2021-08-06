@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# script to make quarterly means of 17-day images.  
+# script to make quarterly means of 17-day images.
 
 from __future__ import print_function
 
@@ -14,42 +14,51 @@ from osgeo import gdal
 from osgeo import gdal_array
 
 DATADIR = "./"
-NODATA_VALUE = -9999.
-Q2M = {"JAS": list(range(7, 10)),
-       "OND": list(range(10, 13)),
-       "JFM": list(range(1, 4)),
-       "AMJ": list(range(4, 7))}
+NODATA_VALUE = -9999.0
+Q2M = {
+    "JAS": list(range(7, 10)),
+    "OND": list(range(10, 13)),
+    "JFM": list(range(1, 4)),
+    "AMJ": list(range(4, 7)),
+}
 
 # this allows GDAL to throw Python Exceptions
 gdal.UseExceptions()
 
 
 def db2pr(dbvalue):
-    pr = 10 ** (dbvalue/10.)
+    pr = 10 ** (dbvalue / 10.0)
     return pr
 
 
 if __name__ == "__main__":
 
     # set up arguments
-    parser = argparse.ArgumentParser("script to make quarterly " +
-                                     "means of ers dB values")
+    parser = argparse.ArgumentParser(
+        "script to make quarterly " + "means of ers dB values"
+    )
 
-    parser.add_argument("-v", "--verbose",
-                        help="increase output verbosity",
-                        action="store_true",
-                        default=False)
-    parser.add_argument("-q", "--quarter",
-                        nargs="?",
-                        choices=("JAS", "OND", "JFM", "AMJ"),
-                        default="JAS",
-                        const="JAS",
-                        help="Quarter for aggregation. Default=JAS")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="increase output verbosity",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "-q",
+        "--quarter",
+        nargs="?",
+        choices=("JAS", "OND", "JFM", "AMJ"),
+        default="JAS",
+        const="JAS",
+        help="Quarter for aggregation. Default=JAS",
+    )
 
-    parser.add_argument('region',
-                        help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
-    parser.add_argument('year', type=int,
-                        help="Year e.g. 1992 (ers data start in 1992)")
+    parser.add_argument("region", help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
+    parser.add_argument(
+        "year", type=int, help="Year e.g. 1992 (ers data start in 1992)"
+    )
 
     args = parser.parse_args()
 
@@ -62,12 +71,25 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # set data type
-    datatype = 'ers[12]'
+    datatype = "ers[12]"
 
     # region list (LAEA regions only)
-    valid_region_list = ['Grn', 'Ala', 'CAm', 'NAm',
-                         'SAm', 'NAf', 'SAf', 'Sib', 'Eur', 'SAs',
-                         'ChJ', 'Ind', 'Aus', 'Ber']
+    valid_region_list = [
+        "Grn",
+        "Ala",
+        "CAm",
+        "NAm",
+        "SAm",
+        "NAf",
+        "SAf",
+        "Sib",
+        "Eur",
+        "SAs",
+        "ChJ",
+        "Ind",
+        "Aus",
+        "Ber",
+    ]
     region = args.region
     try:
         region_index = valid_region_list.index(region)
@@ -87,7 +109,7 @@ if __name__ == "__main__":
     if year == 2000:
         year2 = "00"
     else:
-        year2 = "{:02d}".format(year-1900)
+        year2 = "{:02d}".format(year - 1900)
 
     monthlist = Q2M[quarter]
 
@@ -121,14 +143,14 @@ if __name__ == "__main__":
             a_ds = gdal.Open(a_imgpath)
 
         except Exception:
-            print('Unable to open {}'.format(a_imgpath))
+            print("Unable to open {}".format(a_imgpath))
             sys.exit(1)
 
         try:
             srcband = a_ds.GetRasterBand(1)
 
         except Exception:
-            print('Band ({}) not found'.format(1))
+            print("Band ({}) not found".format(1))
             sys.exit(1)
 
         a_data = srcband.ReadAsArray()
@@ -174,11 +196,11 @@ if __name__ == "__main__":
     dst_ds.SetGeoTransform(gt)
     dst_ds.SetProjection(prj)
     dst_ds = None
-    
+
     dbmean_min = dbmean.min()
     dbmean_max = dbmean.max()
     dbmean_median = np.ma.median(dbmean)
-    
+
     print("Quarterly ({}) Mean Sig0 Stats".format(quarter))
     print("  Min: {}".format(dbmean_min))
     print("  Max: {}".format(dbmean_max))
@@ -202,7 +224,7 @@ if __name__ == "__main__":
     dst_ds.SetGeoTransform(gt)
     dst_ds.SetProjection(prj)
     dst_ds = None
-    
+
     dbstd_min = dbstd.min()
     dbstd_max = dbstd.max()
     dbstd_median = np.ma.median(dbstd)
@@ -211,4 +233,3 @@ if __name__ == "__main__":
     print("  Min: {}".format(dbstd_min))
     print("  Max: {}".format(dbstd_max))
     print("  Median: {}".format(dbstd_median))
-

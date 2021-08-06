@@ -14,42 +14,51 @@ import argparse
 from osgeo import gdal
 
 DATADIR = "./"
-NODATA_VALUE = -9999.
-Q2M = {"JAS": list(range(7, 10)),
-       "OND": list(range(10, 13)),
-       "JFM": list(range(1, 4)),
-       "AMJ": list(range(4, 7))}
+NODATA_VALUE = -9999.0
+Q2M = {
+    "JAS": list(range(7, 10)),
+    "OND": list(range(10, 13)),
+    "JFM": list(range(1, 4)),
+    "AMJ": list(range(4, 7)),
+}
 
 # this allows GDAL to throw Python Exceptions
 gdal.UseExceptions()
 
 
 def db2pr(dbvalue):
-    pr = 10 ** (dbvalue/10.)
+    pr = 10 ** (dbvalue / 10.0)
     return pr
 
 
 if __name__ == "__main__":
 
     # set up arguments
-    parser = argparse.ArgumentParser("script to make quarterly " +
-                                     "means of ascat dB values")
+    parser = argparse.ArgumentParser(
+        "script to make quarterly " + "means of ascat dB values"
+    )
 
-    parser.add_argument("-v", "--verbose",
-                        help="increase output verbosity",
-                        action="store_true",
-                        default=False)
-    parser.add_argument("-q", "--quarter",
-                        nargs="?",
-                        choices=("JAS", "OND", "JFM", "AMJ"),
-                        default="JAS",
-                        const="JAS",
-                        help="Quarter for aggregation. Default=JAS")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="increase output verbosity",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "-q",
+        "--quarter",
+        nargs="?",
+        choices=("JAS", "OND", "JFM", "AMJ"),
+        default="JAS",
+        const="JAS",
+        help="Quarter for aggregation. Default=JAS",
+    )
 
-    parser.add_argument("region",
-                        help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
-    parser.add_argument("year", type=int,
-                        help="Year e.g. 2007 (ascat data start in 2007)")
+    parser.add_argument("region", help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
+    parser.add_argument(
+        "year", type=int, help="Year e.g. 2007 (ascat data start in 2007)"
+    )
 
     args = parser.parse_args()
 
@@ -62,13 +71,26 @@ if __name__ == "__main__":
         sys.exit(0)
 
     # region list (LAEA regions only)
-    valid_region_list = ['Grn', 'Ala', 'CAm', 'NAm',
-                         'SAm', 'NAf', 'SAf', 'Sib', 'Eur', 'SAs',
-                         'ChJ', 'Ind', 'Aus', 'Ber']
+    valid_region_list = [
+        "Grn",
+        "Ala",
+        "CAm",
+        "NAm",
+        "SAm",
+        "NAf",
+        "SAf",
+        "Sib",
+        "Eur",
+        "SAs",
+        "ChJ",
+        "Ind",
+        "Aus",
+        "Ber",
+    ]
     region = args.region
     try:
         region_index = valid_region_list.index(region)
-    except:
+    except Exception:
         sys.stderr.write("Region not valid.\n")
         sys.stderr.write("Valid regions are:\n")
         sys.stderr.write("{}\n".format(valid_region_list))
@@ -82,10 +104,10 @@ if __name__ == "__main__":
     # set data dir
     indir = os.path.join(DATADIR, "geotiffs", region, str(year))
     outdir = indir
-    year2 = "{:02d}".format(year-2000)
+    year2 = "{:02d}".format(year - 2000)
 
     monthlist = Q2M[quarter]
-    
+
     # make a list of files for this year
     filepatt = "msfa-a-{}{}-*.tif".format(region, year2)
     globpatt = os.path.join(indir, filepatt)
@@ -113,22 +135,20 @@ if __name__ == "__main__":
         warnmsg = "No images found for this quarter.\n"
         sys.stdout.write(warnmsg)
         sys.exit(0)
-    
+
     db_quarter = []
     for i, image in enumerate(qlist):
         a_imgpath = os.path.join(indir, image)
         try:
             a_ds = gdal.Open(a_imgpath)
-        except(RuntimeError, e):
-            print('Unable to open {}'.format(a_imgpath))
-            print(e)
+        except RuntimeError:
+            print("Unable to open {}".format(a_imgpath))
             sys.exit(1)
 
         try:
             srcband = a_ds.GetRasterBand(1)
-        except(RuntimeError, e):
-            print('Band ({}) not found'.format(1))
-            print(e)
+        except RuntimeError:
+            print("Band ({}) not found".format(1))
             sys.exit(1)
 
         a_data = srcband.ReadAsArray()
@@ -158,9 +178,7 @@ if __name__ == "__main__":
     # finally, save as a geotiff
     output_format = "GTiff"
     driver = gdal.GetDriverByName(output_format)
-    dst_filename = "{}-msfa-mean-db-{}-{}.tif".format(region,
-                                                         year,
-                                                         quarter)
+    dst_filename = "{}-msfa-mean-db-{}-{}.tif".format(region, year, quarter)
     dst_dir = os.path.join(DATADIR, "geotiffs", region, str(year))
     dst_path = os.path.join(dst_dir, dst_filename)
     if verbose:
@@ -174,11 +192,11 @@ if __name__ == "__main__":
     dst_ds.SetGeoTransform(gt)
     dst_ds.SetProjection(prj)
     dst_ds = None
-    
+
     dbmean_min = dbmean.min()
     dbmean_max = dbmean.max()
     dbmean_median = np.ma.median(dbmean)
-    
+
     print("Quarterly ({}) Mean Stats".format(quarter))
     print("  Min: {}".format(dbmean_min))
     print("  Max: {}".format(dbmean_max))
@@ -187,9 +205,7 @@ if __name__ == "__main__":
     # repeat for standard deviation
     output_format = "GTiff"
     driver = gdal.GetDriverByName(output_format)
-    dst_filename = "{}-msfa-std-db-{}-{}.tif".format(region,
-                                                     year,
-                                                     quarter)
+    dst_filename = "{}-msfa-std-db-{}-{}.tif".format(region, year, quarter)
     dst_dir = os.path.join(DATADIR, "geotiffs", region, str(year))
     dst_path = os.path.join(dst_dir, dst_filename)
     if verbose:
@@ -203,14 +219,12 @@ if __name__ == "__main__":
     dst_ds.SetGeoTransform(gt)
     dst_ds.SetProjection(prj)
     dst_ds = None
-    
+
     dbstd_min = dbstd.min()
     dbstd_max = dbstd.max()
     dbstd_median = np.ma.median(dbstd)
-    
+
     print("Quarterly ({}) Stddev Stats".format(quarter))
     print("  Min: {}".format(dbstd_min))
     print("  Max: {}".format(dbstd_max))
     print("  Median: {}".format(dbstd_median))
-
-    

@@ -16,7 +16,7 @@ do
         monthlist=`seq 7 12`
     elif [ ${year} = '2009' ]
     then
-        monthlist=`seq 1 11` 
+        monthlist=`seq 1 11`
     else
         monthlist=`seq 1 12`
     fi

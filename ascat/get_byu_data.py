@@ -25,38 +25,52 @@ current_doy = datetime.now().timetuple().tm_yday
 def mkdir_p(path):
     try:
         os.makedirs(path)
-    except OSError as exc: # Python >2.5
+    except OSError as exc:  # Python >2.5
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
-        else: raise
+        else:
+            raise
 
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description=(
-        "print a list of ncftpget commands to pull images from " +
-        "ftp.scp.byu.edu")
+    parser = argparse.ArgumentParser(
+        description=(
+            "print a list of ncftpget commands to pull images from " + "ftp.scp.byu.edu"
+        )
     )
 
-    parser.add_argument('region',
-                        help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
-    parser.add_argument('datatype',
-                        help="msfa, mafa, mdfa")
-    parser.add_argument('year',
-                        type=int,
-                        help="4-digit year 2007-current_year")
+    parser.add_argument("region", help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
+    parser.add_argument("datatype", help="msfa, mafa, mdfa")
+    parser.add_argument("year", type=int, help="4-digit year 2007-current_year")
     args = parser.parse_args()
 
     # check arguments
 
     # region
-    valid_region_list = ['Ant', 'Arc', 'Grn', 'Ala', 'CAm', 'NAm',
-                         'SAm', 'NAf', 'SAf', 'Sib', 'Eur', 'SAs',
-                         'ChJ', 'Ind', 'Aus', 'Ber', 'Ama']
+    valid_region_list = [
+        "Ant",
+        "Arc",
+        "Grn",
+        "Ala",
+        "CAm",
+        "NAm",
+        "SAm",
+        "NAf",
+        "SAf",
+        "Sib",
+        "Eur",
+        "SAs",
+        "ChJ",
+        "Ind",
+        "Aus",
+        "Ber",
+        "Ama",
+    ]
     region = args.region
     try:
         region_index = valid_region_list.index(region)
-    except:
+    except Exception:
         sys.stderr.write("Region not valid")
         sys.exit(1)
 
@@ -69,7 +83,7 @@ if __name__ == "__main__":
     # data type - only accept ones valid for all regions
     # polar regions have additional data types for morning, noon,
     # and evening passes
-    valid_datatype_list = ['msfa', 'mafa', 'mdfa']
+    valid_datatype_list = ["msfa", "mafa", "mdfa"]
 
     data_type = args.datatype
     try:
@@ -79,24 +93,20 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # for testing set these here
-    remote_host = 'ftp.scp.byu.edu'
-    basepath = '/data/ascat'
+    remote_host = "ftp.scp.byu.edu"
+    basepath = "/data/ascat"
     # year = 2009
     # region = 'Ama'
     # data_type = 'mafa'
-    itype_list = ['a']
+    itype_list = ["a"]
 
     # first make tree for this year, region, data_type
-    remote_region_path = os.path.join(basepath,
-                                      '{0}'.format(year),
-                                      'sir',
-                                      data_type, region)
+    remote_region_path = os.path.join(
+        basepath, "{0}".format(year), "sir", data_type, region
+    )
 
     # and equivalent for local
-    local_region_path = os.path.join('./',
-                                     '{0}'.format(year),
-                                     'sir',
-                                     data_type, region)
+    local_region_path = os.path.join("./", "{0}".format(year), "sir", data_type, region)
 
     start_doy = 1
 
@@ -109,7 +119,7 @@ if __name__ == "__main__":
     # get 2-digit year
     sy = year - 2000
 
-    short_year = '{0:02d}'.format(sy)
+    short_year = "{0:02d}".format(sy)
 
     # unlike the qscat and oscat data the ascat data composites
     # for 5-days but repeats every 3rd day.  So composite days are:
@@ -126,35 +136,24 @@ if __name__ == "__main__":
     doy_list = range(start_doy, last_doy, nfreq)
 
     for doy in doy_list:
-        
-        doy_str = '{0:03d}'.format(doy)
+
+        doy_str = "{0:03d}".format(doy)
         end_doy = doy + ncomp - 1
 
         for itype in itype_list:
-            i_file = '{0}-{1}-{2}{3}-{4:03d}-{5:03d}.sir.gz'.format(
-                data_type,
-                itype,
-                region,
-                short_year,
-                doy, end_doy)
+            i_file = "{0}-{1}-{2}{3}-{4:03d}-{5:03d}.sir.gz".format(
+                data_type, itype, region, short_year, doy, end_doy
+            )
 
-            path_remote = os.path.join(remote_region_path,
-                                       doy_str,
-                                       itype,
-                                       i_file)
-            path_local = os.path.join(local_region_path,
-                                      doy_str,
-                                      itype,
-                                      i_file)
+            path_remote = os.path.join(remote_region_path, doy_str, itype, i_file)
+            path_local = os.path.join(local_region_path, doy_str, itype, i_file)
 
             # make sure local directory exists
-            dir_local = os.path.join(local_region_path,
-                                     doy_str,
-                                     itype)
+            dir_local = os.path.join(local_region_path, doy_str, itype)
             mkdir_p(dir_local)
 
-            cmdstr = 'ncftpget -C {0} {1} {2}'.format(remote_host,
-                                                      path_remote,
-                                                      path_local)
+            cmdstr = "ncftpget -C {0} {1} {2}".format(
+                remote_host, path_remote, path_local
+            )
 
             print(cmdstr)

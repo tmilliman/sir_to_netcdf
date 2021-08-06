@@ -29,4 +29,3 @@ do
                       -co PREDICTOR=2 ${filelist}
     done
 done
-        

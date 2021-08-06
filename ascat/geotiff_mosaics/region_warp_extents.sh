@@ -11,7 +11,7 @@ case ${region} in
         ;;
     'SAm')
         warp_extent="-82.5. -56.5 -32.5 14.5"
-        ;;    
+        ;;
     'NAf')
         warp_extent="-19.5 2.5 62.5 39.5"
         ;;

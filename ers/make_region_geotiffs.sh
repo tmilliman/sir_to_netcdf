@@ -19,7 +19,7 @@ do
     then
         continue
     fi
-    
+
     echo ${file}
     dirname=`dirname ${file}`
     sirname=`basename ${file} .gz`

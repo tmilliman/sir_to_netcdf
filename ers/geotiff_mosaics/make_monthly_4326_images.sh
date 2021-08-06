@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # script to collect all the monthly images from a region,
-# reproject them to epsg:4326 
+# reproject them to epsg:4326
 
 region=$1
 if [ "${region}" == "" ]
@@ -58,6 +58,5 @@ else
         gdalwarp -t_srs epsg:4326 -tr 0.05 0.05 -te ${warp_extent2} -overwrite -tap -r average ${file} ${target}
         rm ${file}
     done
-    
+
 fi
-    

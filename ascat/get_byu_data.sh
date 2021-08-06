@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# script to pull ascat data from ftp.scp.byu.edu 
+# script to pull ascat data from ftp.scp.byu.edu
 
 region=$1
 if [ "${region}" = "" ]

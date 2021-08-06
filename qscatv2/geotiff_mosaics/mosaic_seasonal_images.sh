@@ -28,4 +28,3 @@ do
                       -ul_lr ${mosaic_ullr} ${filelist}
     done
 done
-        

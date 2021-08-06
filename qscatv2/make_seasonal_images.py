@@ -12,43 +12,52 @@ import argparse
 from osgeo import gdal
 
 DATADIR = "./"
-NODATA_VALUE = -9999.
+NODATA_VALUE = -9999.0
 
-Q2M = {"JAS": list(range(7, 10)),
-       "OND": list(range(10, 13)),
-       "JFM": list(range(1, 4)),
-       "AMJ": list(range(4, 7))}
+Q2M = {
+    "JAS": list(range(7, 10)),
+    "OND": list(range(10, 13)),
+    "JFM": list(range(1, 4)),
+    "AMJ": list(range(4, 7)),
+}
 
 # this allows GDAL to throw Python Exceptions
 gdal.UseExceptions()
 
 
 def db2pr(dbvalue):
-    pr = 10 ** (dbvalue/10.)
+    pr = 10 ** (dbvalue / 10.0)
     return pr
 
 
 if __name__ == "__main__":
 
     # set up arguments
-    parser = argparse.ArgumentParser("script to make quarterly " +
-                                     "means and stdevs of qscat dB values")
+    parser = argparse.ArgumentParser(
+        "script to make quarterly " + "means and stdevs of qscat dB values"
+    )
 
-    parser.add_argument("-v", "--verbose",
-                        help="increase output verbosity",
-                        action="store_true",
-                        default=False)
-    parser.add_argument("-q", "--quarter",
-                        nargs="?",
-                        choices=("JAS", "OND", "JFM", "AMJ"),
-                        default="JAS",
-                        const="JAS",
-                        help="Quarter for aggregation. Default=JAS")
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="increase output verbosity",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "-q",
+        "--quarter",
+        nargs="?",
+        choices=("JAS", "OND", "JFM", "AMJ"),
+        default="JAS",
+        const="JAS",
+        help="Quarter for aggregation. Default=JAS",
+    )
 
-    parser.add_argument("region",
-                        help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
-    parser.add_argument("year", type=int,
-                        help="Year e.g. 1999 (qscat data start in 1999)")
+    parser.add_argument("region", help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
+    parser.add_argument(
+        "year", type=int, help="Year e.g. 1999 (qscat data start in 1999)"
+    )
 
     args = parser.parse_args()
 
@@ -57,9 +66,22 @@ if __name__ == "__main__":
     quarter = args.quarter
 
     # region list (LAEA regions only)
-    valid_region_list = ['Grn', 'Ala', 'CAm', 'NAm',
-                         'SAm', 'NAf', 'SAf', 'Sib', 'Eur', 'SAs',
-                         'ChJ', 'Ind', 'Aus', 'Ber']
+    valid_region_list = [
+        "Grn",
+        "Ala",
+        "CAm",
+        "NAm",
+        "SAm",
+        "NAf",
+        "SAf",
+        "Sib",
+        "Eur",
+        "SAs",
+        "ChJ",
+        "Ind",
+        "Aus",
+        "Ber",
+    ]
     region = args.region
     try:
         region_index = valid_region_list.index(region)
@@ -80,7 +102,7 @@ if __name__ == "__main__":
     if year == 1999:
         year2 = 99
     else:
-        year2 = "{:02d}".format(year-2000)
+        year2 = "{:02d}".format(year - 2000)
 
     monthlist = Q2M[quarter]
 
@@ -119,13 +141,13 @@ if __name__ == "__main__":
         try:
             a_ds = gdal.Open(a_imgpath)
         except Exception:
-            print('Unable to open {}'.format(a_imgpath))
+            print("Unable to open {}".format(a_imgpath))
             sys.exit(1)
 
         try:
             srcband = a_ds.GetRasterBand(1)
         except Exception:
-            print('Band ({}) not found'.format(1))
+            print("Band ({}) not found".format(1))
             sys.exit(1)
 
         a_data = srcband.ReadAsArray()
@@ -183,9 +205,7 @@ if __name__ == "__main__":
     # repeat for standard deviation
     output_format = "GTiff"
     driver = gdal.GetDriverByName(output_format)
-    dst_filename = "{}-quev-std-db-{}-{}.tif".format(region,
-                                                     year,
-                                                     quarter)
+    dst_filename = "{}-quev-std-db-{}-{}.tif".format(region, year, quarter)
     dst_dir = os.path.join(DATADIR, "geotiffs", region, str(year))
     dst_path = os.path.join(dst_dir, dst_filename)
     if verbose:
@@ -199,13 +219,12 @@ if __name__ == "__main__":
     dst_ds.SetGeoTransform(gt)
     dst_ds.SetProjection(prj)
     dst_ds = None
-    
+
     dbstd_min = dbstd.min()
     dbstd_max = dbstd.max()
     dbstd_median = np.ma.median(dbstd)
-    
+
     print("Quarterly ({}) Stdev Stats".format(quarter))
     print("  Min: {}".format(dbstd_min))
     print("  Max: {}".format(dbstd_max))
     print("  Median: {}".format(dbstd_median))
-    

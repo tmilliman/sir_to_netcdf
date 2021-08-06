@@ -99,4 +99,3 @@ QuikSCAT, ASCAT) set for 1993-2020**,
 v1 (Preliminary Release). Palisades, NY: NASA Socioeconomic Data and
 Applications Center (SEDAC). DOI: To be assigned following peer review.
 Accessed DAY MONTH YEAR.
-

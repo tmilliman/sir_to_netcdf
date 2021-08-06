@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# script to make monthly means of 4-day images.  
+# script to make monthly means of 4-day images.
 
 from __future__ import print_function
 
@@ -13,34 +13,37 @@ import argparse
 from osgeo import gdal
 
 DATADIR = "./"
-NODATA_VALUE = -9999.
+NODATA_VALUE = -9999.0
 
 # this allows GDAL to throw Python Exceptions
 gdal.UseExceptions()
 
 
 def db2pr(dbvalue):
-    pr = 10 ** (dbvalue/10.)
+    pr = 10 ** (dbvalue / 10.0)
     return pr
 
 
 if __name__ == "__main__":
 
     # set up arguments
-    parser = argparse.ArgumentParser("script to make monthly " +
-                                     "means and stdevs of qscat dB values")
+    parser = argparse.ArgumentParser(
+        "script to make monthly " + "means and stdevs of qscat dB values"
+    )
 
-    parser.add_argument("-v", "--verbose",
-                        help="increase output verbosity",
-                        action="store_true",
-                        default=False)
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="increase output verbosity",
+        action="store_true",
+        default=False,
+    )
 
-    parser.add_argument('region',
-                        help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
-    parser.add_argument('year', type=int,
-                        help="Year e.g. 1999 (qscat data start in 1999)")
-    parser.add_argument('month', type=int,
-                        help="Month (1-12)")
+    parser.add_argument("region", help="BYU region string (e.g. SAm, NAm, Ama, etc.)")
+    parser.add_argument(
+        "year", type=int, help="Year e.g. 1999 (qscat data start in 1999)"
+    )
+    parser.add_argument("month", type=int, help="Month (1-12)")
 
     args = parser.parse_args()
 
@@ -51,18 +54,31 @@ if __name__ == "__main__":
     if (year < 1999) or (year > 2009):
         print("Invalid year for QuikSCAT: 1999-2009")
         sys.exit(0)
-    
+
     # set data type
-    datatype = 'quev'
-    
+    datatype = "quev"
+
     # region list (LAEA regions only)
-    valid_region_list = ['Grn', 'Ala', 'CAm', 'NAm',
-                         'SAm', 'NAf', 'SAf', 'Sib', 'Eur', 'SAs',
-                         'ChJ', 'Ind', 'Aus', 'Ber']
+    valid_region_list = [
+        "Grn",
+        "Ala",
+        "CAm",
+        "NAm",
+        "SAm",
+        "NAf",
+        "SAf",
+        "Sib",
+        "Eur",
+        "SAs",
+        "ChJ",
+        "Ind",
+        "Aus",
+        "Ber",
+    ]
     region = args.region
     try:
         region_index = valid_region_list.index(region)
-    except:
+    except Exception:
         sys.stderr.write("Region not valid.\n")
         sys.stderr.write("Valid regions are:\n")
         sys.stderr.write("{}\n".format(valid_region_list))
@@ -73,14 +89,13 @@ if __name__ == "__main__":
         print("year: {}".format(year))
         print("month: {}".format(month))
 
-
     indir = os.path.join(DATADIR, "geotiffs", region, str(year))
     outdir = indir
     if year == 1999:
         year2 = 99
     else:
-        year2 = "{:02d}".format(year-2000)
-        
+        year2 = "{:02d}".format(year - 2000)
+
     filepatt = "{}-a-{}{}-*.tif".format(datatype, region, year2)
     globpatt = os.path.join(indir, filepatt)
     if verbose:
@@ -110,18 +125,16 @@ if __name__ == "__main__":
         try:
             a_ds = gdal.Open(a_imgpath)
 
-        except(RuntimeError, e):
-            print('Unable to open {}'.format(a_imgpath))
-            print(e)
+        except RuntimeError:
+            print("Unable to open {}".format(a_imgpath))
             sys.exit(1)
 
         try:
             srcband = a_ds.GetRasterBand(1)
 
-        except(RuntimeError, e):
+        except RuntimeError:
             # for example, try GetRasterBand(10)
-            print('Band ({}) not found'.format(1))
-            print(e)
+            print("Band ({}) not found".format(1))
             sys.exit(1)
 
         a_data = srcband.ReadAsArray()
@@ -146,7 +159,7 @@ if __name__ == "__main__":
     dbarray = np.ma.stack(db_month, axis=2)
     dbmean = np.ma.mean(dbarray, axis=2)
     dbstd = np.ma.std(dbarray, axis=2)
-    
+
     print(dbmean.shape)
 
     # finally, save mean sig0 as a geotiff
@@ -167,11 +180,11 @@ if __name__ == "__main__":
     dst_ds.SetGeoTransform(gt)
     dst_ds.SetProjection(prj)
     dst_ds = None
-    
+
     dbmean_min = dbmean.min()
     dbmean_max = dbmean.max()
     dbmean_median = np.ma.median(dbmean)
-    
+
     print("Monthly Mean Sig0 Stats")
     print("  Min: {}".format(dbmean_min))
     print("  Max: {}".format(dbmean_max))
@@ -195,13 +208,12 @@ if __name__ == "__main__":
     dst_ds.SetGeoTransform(gt)
     dst_ds.SetProjection(prj)
     dst_ds = None
-    
+
     dbstd_min = dbstd.min()
     dbstd_max = dbstd.max()
     dbstd_median = np.ma.median(dbstd)
-    
+
     print("Monthly Sig0 Stdev Stats")
     print("  Min: {}".format(dbstd_min))
     print("  Max: {}".format(dbstd_max))
     print("  Median: {}".format(dbstd_median))
-    

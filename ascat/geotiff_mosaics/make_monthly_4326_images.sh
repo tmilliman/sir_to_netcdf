@@ -11,7 +11,7 @@ then
     exit
 fi
 
-. region_warp_extents.sh 
+. region_warp_extents.sh
 
 # copy geotiffs in local LAEA projection
 cp -p ../geotiffs/${region}/*/${region}-msfa-monthly-mean-db-*.tif ./
@@ -59,4 +59,3 @@ else
         rm ${file}
     done
 fi
-

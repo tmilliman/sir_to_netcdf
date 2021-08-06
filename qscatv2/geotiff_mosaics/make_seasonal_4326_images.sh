@@ -30,7 +30,7 @@ then
         gdalwarp -t_srs epsg:4326 -tr 0.05 0.05 -te ${warp_extent} -overwrite -tap -r average ${file} ${target}
         rm ${file}
     done
-    
+
     # repeat for std images
     for file in `ls ${region}-quev-std-db-*-[JOA]*.tif`
     do
@@ -62,4 +62,3 @@ else
         rm ${file}
     done
 fi
-    

@@ -21,7 +21,7 @@ do
     then
         continue
     fi
-    
+
     echo ${file}
     gunzip -v -f ${file}
     dirname=`dirname ${file}`
