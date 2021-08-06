@@ -1,15 +1,12 @@
 name: urban_backscatter
 channels:
   - conda-forge
-  - bioconda
   - defaults
 dependencies:
   - netcdf4
   - xarray
   - seaborn
-  - jupyterlab
   - pandas
-  - python=3.9
   - pytest
   - pre-commit
   - flake8

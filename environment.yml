@@ -1,7 +1,6 @@
 name: urban_backscatter
 channels:
   - conda-forge
-  - bioconda
   - defaults
 dependencies:
   - netcdf4
