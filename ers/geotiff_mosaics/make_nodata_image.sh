@@ -3,8 +3,8 @@
 # script to make an image with nodata to cover gaps in the
 # data availability
 
-infile=ers_ers1_mean_db_1993_01.tif
-outfile=ers_missing_data_month.tif
+infile=ers_ers12_mean_db_1993_JFM.tif
+outfile=ers_missing_data_image.tif
 
 gdal_calc.py -A ${infile} \
              --calc="(A>-9999)*-9999" \
