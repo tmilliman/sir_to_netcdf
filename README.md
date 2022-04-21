@@ -30,7 +30,7 @@ The scripts in this repository can be downloaded as a single
 [zipfile](https://github.com/tmilliman/urban_backscatter/archive/refs/heads/main.zip).
 Alternatively, using git you can clone the repository:
 
-    git clone https://github.com/tmilliman/urban_backscatter.git
+    git clone https://github.com/tmilliman/sir_to_netcdf.git
 
 ### Setting up a Virtual Environment
 
