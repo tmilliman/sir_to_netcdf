@@ -1,4 +1,4 @@
-name: urban_backscatter
+name: sir_to_netcdf
 channels:
   - conda-forge
   - defaults
@@ -13,4 +13,3 @@ dependencies:
   - flake8
   - black
   - pytest-cov
-prefix: /Users/tmilliman/miniconda3/envs/urban_backscatter

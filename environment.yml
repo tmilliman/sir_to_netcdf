@@ -1,4 +1,4 @@
-name: urban_backscatter
+name: sir_to_netcdf
 channels:
   - conda-forge
   - defaults
