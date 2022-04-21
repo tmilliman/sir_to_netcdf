@@ -72,7 +72,7 @@ if __name__ == "__main__":
     ds.sig0std.attrs["grid_mapping"] = "spatial_ref"
     ds.sig0std.attrs["standard_name"] = "sigma0-std"
     ds.sig0std.attrs["long_name"] = [
-        "standard deviation surface " + "normalized radar backscatter " + "coefficient"
+        "standard deviation surface normalized radar backscatter coefficient"
     ]
     ds.sig0std.attrs["missing_value"] = -9999.0
     ds.sig0std.attrs["_FillValue"] = -9999.0

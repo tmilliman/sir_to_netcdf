@@ -71,9 +71,7 @@ if __name__ == "__main__":
     ds.sig0.attrs["units"] = "decibel"
     ds.sig0.attrs["grid_mapping"] = "spatial_ref"
     ds.sig0.attrs["standard_name"] = "sigma0"
-    ds.sig0.attrs["long_name"] = [
-        "surface normalized radar " + "backscatter coefficient"
-    ]
+    ds.sig0.attrs["long_name"] = ["surface normalized radar backscatter coefficient"]
     ds.sig0.attrs["missing_value"] = -9999.0
     ds.sig0.attrs["_FillValue"] = -9999.0
     ds.sig0.attrs["valid_min"] = -33.0
