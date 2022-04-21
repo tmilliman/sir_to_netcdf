@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 
-import sys
 import glob
 from datetime import datetime
-import argparse
-
 import pandas as pd
 import xarray as xr
+import rioxarray as rio
 
 import ascat_common as common
 
@@ -19,12 +17,6 @@ def time_index_from_filenames(filenames):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
-        description="Script to create a monthly mean netcdf file"
-    )
-
-    args = parser.parse_args()
-
     # get a list of files
     filepattern = "ascat_msfa_mean_db_*_[01][0-9].tif"
     filenames = glob.glob(filepattern)
@@ -34,12 +26,10 @@ if __name__ == "__main__":
     nimages = len(filelist)
     print("Number of images: {}".format(nimages))
 
-    if nimages == 0:
-        print("No images found.")
-        sys.exit(0)
-
     # concat all the files with a time index
-    da = xr.concat([xr.open_rasterio(f) for f in filelist], dim=time)
+    da = xr.concat(
+        [rio.open_rasterio(f, parse_coordinates=True) for f in filelist], dim=time
+    )
 
     # remove band dimension (each input image has a single band)
     da = da.squeeze("band", drop=True)
@@ -79,12 +69,16 @@ if __name__ == "__main__":
 
     # set attributes for vars
     ds.sig0.attrs["units"] = "decibel"
+    ds.sig0.attrs["grid_mapping"] = "spatial_ref"
     ds.sig0.attrs["standard_name"] = "sigma0"
-    ds.sig0.attrs["long_name"] = "surface normalized radar backscatter coefficient"
+    ds.sig0.attrs["long_name"] = [
+        "surface normalized radar " + "backscatter coefficient"
+    ]
     ds.sig0.attrs["missing_value"] = -9999.0
     ds.sig0.attrs["_FillValue"] = -9999.0
     ds.sig0.attrs["valid_min"] = -33.0
     ds.sig0.attrs["valid_max"] = 0.0
+    ds.sig0.attrs["coordinates"] = "spatial_ref"
 
     print(ds)
 
