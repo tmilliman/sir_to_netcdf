@@ -40,7 +40,7 @@ the scripts.  You can set up a virtual environment, `urban_backscatter`,
 by doing the following:
 
     conda env create --file environment.yml
-    conda activate sirpy
+    conda activate sir_to_netcdf
     python -m pip install git+https://github.com/tmilliman/sirpy2.git
 
 ### Outline of Steps
