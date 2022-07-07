@@ -21,7 +21,9 @@ do
         fi
         gdal_merge.py -o ${outfile} -of GTiff \
                       -n -9999. -a_nodata -9999. \
-                      -ul_lr ${mosaic_ullr} ${filelist}
+                      -ul_lr ${mosaic_ullr} \
+                      -co COMPRESS=DEFLATE \
+                      -co PREDICTOR=2 ${filelist}
 
         # repeat for std
         filelist=`ls *_ers_std_db_${year}_${quarter}.tif`
@@ -32,6 +34,8 @@ do
         fi
         gdal_merge.py -o ${outfile} -of GTiff \
                       -n -9999. -a_nodata -9999. \
-                      -ul_lr ${mosaic_ullr} ${filelist}
+                      -ul_lr ${mosaic_ullr} \
+                      -co COMPRESS=DEFLATE \
+                      -co PREDICTOR=2 ${filelist}
     done
 done
