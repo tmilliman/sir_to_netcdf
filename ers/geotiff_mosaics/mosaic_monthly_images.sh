@@ -68,11 +68,15 @@ do
         outfile=ers_ers2_mean_db_${year}_${month}.tif
         gdal_merge.py -o ${outfile} -of GTiff \
                       -n -9999. -a_nodata -9999. \
-                      -ul_lr ${mosaic_ullr} ${filelist}
+                      -ul_lr ${mosaic_ullr} \
+                      -co COMPRESS=DEFLATE \
+                      -co PREDICTOR=2 ${filelist}
         filelist=`ls *_ers2_std_db_${year}_${month}.tif`
         outfile=ers_ers2_std_db_${year}_${month}.tif
         gdal_merge.py -o ${outfile} -of GTiff \
                       -n -9999. -a_nodata -9999. \
-                      -ul_lr ${mosaic_ullr} ${filelist}
+                      -ul_lr ${mosaic_ullr} \
+                      -co COMPRESS=DEFLATE \
+                      -co PREDICTOR=2 ${filelist}
     done
 done
