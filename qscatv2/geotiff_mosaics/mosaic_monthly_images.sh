@@ -27,11 +27,15 @@ do
         outfile=qscat_quev_mean_db_${year}_${month}.tif
         gdal_merge.py -o ${outfile} -of GTiff \
                       -n -9999. -a_nodata -9999. \
-                      -ul_lr ${mosaic_ullr} ${filelist}
+                      -ul_lr ${mosaic_ullr} \
+                      -co COMPRESS=DEFLATE \
+                      -co PREDICTOR=2 ${filelist}
         filelist=`ls *_qscat_quev_std_db_${year}_${month}.tif`
         outfile=qscat_quev_std_db_${year}_${month}.tif
         gdal_merge.py -o ${outfile} -of GTiff \
                       -n -9999. -a_nodata -9999. \
-                      -ul_lr ${mosaic_ullr} ${filelist}
+                      -ul_lr ${mosaic_ullr} \
+                      -co COMPRESS=DEFLATE \
+                      -co PREDICTOR=2 ${filelist}
     done
 done
